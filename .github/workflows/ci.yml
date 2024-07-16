@@ -27,7 +27,7 @@ jobs:
 
     - name: Push to build repository
       env:
-        REPO_URL: https://github.com/your-username/build-repo.git
+        REPO_URL: https://github.com/javeriakhn/build-repo.git
         TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       run: |
         git config --global javeriakhn "GitHub Actions"
