@@ -1,36 +1,41 @@
-# This is a basic workflow to help you get started with Actions
 
-name: CI
+name: Build and Package Application
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    tags:
+      - '*'
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+    - name: Checkout source code
+      uses: actions/checkout@v2
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+    - name: Install PHP Composer
+      run: |
+        docker run --rm -v "${{ github.workspace }}:/app" -w /app php:8.3-cli-alpine sh -c "
+          apk add --no-cache curl \
+          && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer \
+          && composer install --optimize-autoloader --no-dev --no-interaction
+        "
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+    - name: Create tar.gz package
+      run: |
+        tar -czvf application.tar.gz .
+
+    - name: Push to build repository
+      env:
+        REPO_URL: https://github.com/javeriakhn/build-repo.git
+        TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      run: |
+        git config --global javeriakhn "GitHub Actions"
+        git config --global javeriakashan97@gmail.com "actions@github.com"
+        git clone https://$TOKEN@github.com/your-username/build-repo.git build-repo
+        mv application.tar.gz build-repo/
+        cd build-repo
+        git add application.tar.gz
+        git commit -m "Add build for tag ${{ github.ref }}"
+        git push origin main
