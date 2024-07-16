@@ -1,5 +1,5 @@
 {
-    "name": "javeriakhn/CIproject",
+    "name": "javeriakhn/php-build-repo",
     "description": "CI project",
     "require": {
         "php": "^8.0",
