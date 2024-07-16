@@ -1,0 +1,14 @@
+{
+    "name": "javeriakhn/CIproject",
+    "description": "CI project",
+    "require": {
+        "php": "^8.0",
+        "some/package": "^1.0"
+        // Add more dependencies as needed
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    }
+}

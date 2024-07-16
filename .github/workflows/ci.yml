@@ -13,13 +13,12 @@ jobs:
     - name: Checkout source code
       uses: actions/checkout@v2
 
-    - name: Build application using PHP Docker image
+    - name: Install PHP Composer
       run: |
         docker run --rm -v "${{ github.workspace }}:/app" -w /app php:8.3-cli-alpine sh -c "
           apk add --no-cache curl \
-          && curl -sS https://getcomposer.org/download/2.7.6/composer.phar -o composer.phar \
-          && php composer.phar config --global --no-ansi --no-interaction \
-          && php composer.phar install --optimize-autoloader --no-dev --no-interaction
+          && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer \
+          && composer install --optimize-autoloader --no-dev --no-interaction
         "
 
     - name: Create tar.gz package
